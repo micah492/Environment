@@ -112,6 +112,24 @@ function module:SetTeams(awayInfo, homeInfo)
 	module.Settings.AwayInfo = awayInfo
 	module.Settings.HomeInfo = homeInfo
 
+	-- Setting Stadium Colors --
+	print("[ENVIROMENT] Setting the Stadium's colors.")
+	local Stadium = Services["Workspace"].Models.Stadium
+	for i,v in ipairs(Stadium.Seats:GetChildren()) do
+		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+	end
+	for i,v in ipairs(Stadium.PressSeats:GetChildren()) do
+		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
+	end
+	for i,v in ipairs(Stadium.Barrier.PrimaryPads:GetChildren()) do
+		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+	end
+	for i,v in ipairs(Stadium.Barrier.SecondaryPads:GetChildren()) do
+		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
+	end
+	Services["Workspace"].Models.Uprights1.FGparts.Base.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+	Services["Workspace"].Models.Uprights2.FGparts.Base.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+
 	-- Setting Field --
 	local Field = Services["Workspace"].Models.Field
 
