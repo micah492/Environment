@@ -21,7 +21,9 @@ local Services = {
 local module = {
 	Settings = {
 		AwayInfo = nil,
-		HomeInfo = nil
+		HomeInfo = nil,
+		AwayVariant = "Normal",
+		HomeVariant = "Normal"
 	}
 }
 
@@ -49,7 +51,7 @@ local function isNeutral(player)
 	return not player.Team or player.Team.Name == "Neutral"
 end
 
-function SetJersey(player, teamInfo, pos)
+function SetJersey(player, teamInfo, pos, variant)
 	pcall(function()
 		if not (player.Character) then
 			return
@@ -63,8 +65,16 @@ function SetJersey(player, teamInfo, pos)
 				return
 			end
 
+			-- Determine which jersey to use based on variant
+			local jerseyType = pos -- Default to "Home" or "Away"
+			
+			-- If variant is "Alternate" and the team has an Alternate jersey, use it
+			if variant == "Alternate" and teamInfo["Colors"]["Jersey"]["Alternate"] then
+				jerseyType = "Alternate"
+			end
+
 			--Setting Helmet
-			uniform.Helmet.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Helmet"])
+			uniform.Helmet.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Helmet"])
 			uniform.Helmet.Mesh.TextureId = ""
 
 			if (uniform.Helmet:FindFirstChild("RightLogo")) then
@@ -77,40 +87,42 @@ function SetJersey(player, teamInfo, pos)
 
 			--Setting Upper Uniform
 			uniform.ShoulderPads.Front.Team.Text = string.upper(teamInfo["City"])
-			uniform.ShoulderPads.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Jersey"])
-			uniform.Shirt.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Jersey"])
-			uniform.LeftPit.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Jersey"])
-			uniform.LeftShortSleeve.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Jersey"])
-			uniform.RightShortSleeve.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Jersey"])
-			uniform.RightPit.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Jersey"])
+			uniform.ShoulderPads.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
+			uniform.Shirt.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
+			uniform.LeftPit.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
+			uniform.LeftShortSleeve.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
+			uniform.RightShortSleeve.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
+			uniform.RightPit.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
 
 			--Setting Pants
-			uniform.LeftPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Pants"])
-			uniform.RightPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Pants"])
+			uniform.LeftPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Pants"])
+			uniform.RightPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Pants"])
 
 			--Setting Stripes
-			uniform.LeftGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
-			uniform.LeftShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
-			uniform.LeftSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
-			uniform.LeftShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
-			uniform.RightGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
-			uniform.RightShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
-			uniform.RightSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
-			uniform.RightShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["Stripe"])
+			uniform.LeftGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			uniform.LeftShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			uniform.LeftSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			uniform.LeftShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			uniform.RightGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			uniform.RightShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			uniform.RightSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			uniform.RightShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
 
 			--Setting Numbers
 			FindNumbers(
 				uniform:GetChildren(),
-				Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["NumberInner"]),
-				Color3.fromHex(teamInfo["Colors"]["Jersey"][pos]["NumberStroke"])
+				Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["NumberInner"]),
+				Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["NumberStroke"])
 			)
 		end)
 	end)
 end
 
-function module:SetTeams(awayInfo, homeInfo)
+function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 	module.Settings.AwayInfo = awayInfo
 	module.Settings.HomeInfo = homeInfo
+	module.Settings.AwayVariant = awayVariant or "Normal"
+	module.Settings.HomeVariant = homeVariant or "Normal"
 
 	-- Setting Stadium Colors --
 	print("[ENVIROMENT] Setting the Stadium's colors.")
@@ -159,9 +171,9 @@ function module:SetTeams(awayInfo, homeInfo)
 
 		print("[ENVIROMENT] Set " .. player.Name .. "'s Jersey")
 		if (player.Team.Name == FFValues.Home.Value.Name) then
-			SetJersey(player,module.Settings["HomeInfo"],"Home")
+			SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 		else
-			SetJersey(player,module.Settings["AwayInfo"],"Away")
+			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 		end
 	end
 end
@@ -179,7 +191,7 @@ FFValues.Away.Changed:Connect(function(team)
 			if isNeutral(player) then return end -- [NEUTRAL FIX]
 			if (module.Settings["AwayInfo"]) then
 				print("[ENVIROMENT] Set " .. player.Name .. "'s Jersey")
-				SetJersey(player,module.Settings["AwayInfo"],"Away")
+				SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 			end
 		end)
 	end
@@ -191,7 +203,7 @@ FFValues.Home.Changed:Connect(function(team)
 			if isNeutral(player) then return end -- [NEUTRAL FIX]
 			if (module.Settings["HomeInfo"]) then
 				print("[ENVIROMENT] Set " .. player.Name .. "'s Jersey")
-				SetJersey(player,module.Settings["HomeInfo"],"Home")
+				SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 			end
 		end)
 	end
@@ -203,9 +215,9 @@ Services["Players"].PlayerAdded:Connect(function(player)
 
 		print("[ENVIROMENT] Set " .. player.Name .. "'s Jersey")
 		if (player.Team.Name == FFValues.Home.Value.Name) then
-			SetJersey(player,module.Settings["HomeInfo"],"Home")
+			SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 		else
-			SetJersey(player,module.Settings["AwayInfo"],"Away")
+			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 		end
 	end)
 end)
@@ -253,15 +265,15 @@ Services["Workspace"].DescendantAdded:Connect(function(model)
 			if (model:WaitForChild("Humanoid")) then
 				if (FFValues.PossessionTag.Value == FFValues.Home.Value.Name) then
 					if (model.Name == "Kicker") then
-						SetJersey({Character = model},module.Settings["AwayInfo"],"Away")
+						SetJersey({Character = model}, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 					else
-						SetJersey({Character = model},module.Settings["HomeInfo"],"Away")
+						SetJersey({Character = model}, module.Settings["HomeInfo"], "Away", module.Settings.HomeVariant)
 					end
 				else
 					if (model.Name == "Kicker") then
-						SetJersey({Character = model},module.Settings["HomeInfo"],"Home")
+						SetJersey({Character = model}, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 					else
-						SetJersey({Character = model},module.Settings["AwayInfo"],"Home")
+						SetJersey({Character = model}, module.Settings["AwayInfo"], "Home", module.Settings.AwayVariant)
 					end
 				end
 				print("[ENVIROMENT] Set " .. model.Name .. "'s Jersey")
@@ -280,9 +292,9 @@ Services["Workspace"].DescendantAdded:Connect(function(model)
 			if (player and not isNeutral(player)) then -- [NEUTRAL FIX]
 				print("[ENVIROMENT] Set " .. player.Name .. "'s Replay Jersey")
 				if (player.Team.Name == FFValues.Home.Value.Name) then
-					SetJersey({Character = model},module.Settings["HomeInfo"],"Home")
+					SetJersey({Character = model}, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 				else
-					SetJersey({Character = model},module.Settings["AwayInfo"],"Away")
+					SetJersey({Character = model}, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 				end
 			end
 		end
@@ -298,9 +310,9 @@ for _, player in ipairs(Services["Players"]:GetPlayers()) do
 
 		print("[ENVIROMENT] Set " .. player.Name .. "'s Jersey")
 		if (player.Team.Name == FFValues.Home.Value.Name) then
-			SetJersey(player,module.Settings["HomeInfo"],"Home")
+			SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 		else
-			SetJersey(player,module.Settings["AwayInfo"],"Away")
+			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 		end
 	end)
 end
