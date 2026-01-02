@@ -125,22 +125,54 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 	module.Settings.HomeVariant = homeVariant or "Normal"
 
 	-- Setting Stadium Colors --
-	print("[ENVIROMENT] Setting the Stadium's colors.")
-	local Stadium = Services["Workspace"].Models.Stadium
-	for i,v in ipairs(Stadium.Seats:GetChildren()) do
-		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+	-- Only modify stadium if it exists (custom stadiums may have different names)
+	local success, err = pcall(function()
+		local Stadium = Services["Workspace"].Models.Stadium
+		if Stadium then
+			print("[ENVIROMENT] Setting the Stadium's colors.")
+			
+			if Stadium:FindFirstChild("Seats") then
+				for i,v in ipairs(Stadium.Seats:GetChildren()) do
+					v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+				end
+			end
+			
+			if Stadium:FindFirstChild("PressSeats") then
+				for i,v in ipairs(Stadium.PressSeats:GetChildren()) do
+					v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
+				end
+			end
+			
+			if Stadium:FindFirstChild("Barrier") then
+				if Stadium.Barrier:FindFirstChild("PrimaryPads") then
+					for i,v in ipairs(Stadium.Barrier.PrimaryPads:GetChildren()) do
+						v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+					end
+				end
+				if Stadium.Barrier:FindFirstChild("SecondaryPads") then
+					for i,v in ipairs(Stadium.Barrier.SecondaryPads:GetChildren()) do
+						v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
+					end
+				end
+			end
+		else
+			print("[ENVIROMENT] Custom stadium detected - skipping stadium color changes.")
+		end
+	end)
+	
+	if not success then
+		print("[ENVIROMENT] Custom stadium detected - skipping stadium color changes.")
 	end
-	for i,v in ipairs(Stadium.PressSeats:GetChildren()) do
-		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
-	end
-	for i,v in ipairs(Stadium.Barrier.PrimaryPads:GetChildren()) do
-		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
-	end
-	for i,v in ipairs(Stadium.Barrier.SecondaryPads:GetChildren()) do
-		v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
-	end
-	Services["Workspace"].Models.Uprights1.FGparts.Base.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
-	Services["Workspace"].Models.Uprights2.FGparts.Base.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+
+	-- Setting Field Goal Uprights --
+	pcall(function()
+		if Services["Workspace"].Models:FindFirstChild("Uprights1") then
+			Services["Workspace"].Models.Uprights1.FGparts.Base.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+		end
+		if Services["Workspace"].Models:FindFirstChild("Uprights2") then
+			Services["Workspace"].Models.Uprights2.FGparts.Base.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+		end
+	end)
 
 	-- Setting Field --
 	local Field = Services["Workspace"].Models.Field
