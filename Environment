@@ -178,6 +178,25 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 	end
 end
 
+function module:UpdateVariants(awayVariant, homeVariant)
+	module.Settings.AwayVariant = awayVariant or module.Settings.AwayVariant
+	module.Settings.HomeVariant = homeVariant or module.Settings.HomeVariant
+	
+	-- Re-apply jerseys to all players
+	for _, player in ipairs(Services.Players:GetPlayers()) do
+		if isNeutral(player) then
+			continue
+		end
+
+		print("[ENVIROMENT] Updating " .. player.Name .. "'s Jersey")
+		if (player.Team.Name == FFValues.Home.Value.Name) then
+			SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
+		else
+			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
+		end
+	end
+end
+
 function module:SetTime(isDay)
 	module.Settings.IsDay = isDay
 end
