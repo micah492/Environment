@@ -98,15 +98,31 @@ function SetJersey(player, teamInfo, pos, variant)
 			uniform.LeftPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Pants"])
 			uniform.RightPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Pants"])
 
-			--Setting Stripes
-			uniform.LeftGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
-			uniform.LeftShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
-			uniform.LeftSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
-			uniform.LeftShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
-			uniform.RightGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
-			uniform.RightShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
-			uniform.RightSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
-			uniform.RightShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			--Setting Stripes (with safety checks for kickers/punters)
+			if uniform:FindFirstChild("LeftGlove") then
+				uniform.LeftGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
+			if uniform:FindFirstChild("LeftShoe") then
+				uniform.LeftShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
+			if uniform:FindFirstChild("LeftSock") then
+				uniform.LeftSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
+			if uniform:FindFirstChild("LeftShortSock") then
+				uniform.LeftShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
+			if uniform:FindFirstChild("RightGlove") then
+				uniform.RightGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
+			if uniform:FindFirstChild("RightShoe") then
+				uniform.RightShoe.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
+			if uniform:FindFirstChild("RightSock") then
+				uniform.RightSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
+			if uniform:FindFirstChild("RightShortSock") then
+				uniform.RightShortSock.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
+			end
 
 			--Setting Numbers
 			FindNumbers(
