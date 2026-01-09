@@ -6,6 +6,7 @@ This file contains the following features:
 * Stadium Colors
 * Field Decals (endzones, midfield)
 * Automatic Touchdown Songs
+* Helmet Logo Support
 
 Created by Supermrk (@supermrk)
 ]]
@@ -77,12 +78,30 @@ function SetJersey(player, teamInfo, pos, variant)
 			uniform.Helmet.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Helmet"])
 			uniform.Helmet.Mesh.TextureId = ""
 
+			-- Remove old logos if they exist
 			if (uniform.Helmet:FindFirstChild("RightLogo")) then
 				uniform.Helmet.RightLogo:Destroy()
 			end
 			
 			if (uniform.Helmet:FindFirstChild("LeftLogo")) then
 				uniform.Helmet.LeftLogo:Destroy()
+			end
+
+			-- Apply team logo if available
+			if teamInfo["LogoID"] then
+				-- Create right side logo
+				local rightDecal = Instance.new("Decal")
+				rightDecal.Name = "RightLogo"
+				rightDecal.Texture = teamInfo["LogoID"]
+				rightDecal.Face = Enum.NormalId.Right
+				rightDecal.Parent = uniform.Helmet
+				
+				-- Create left side logo
+				local leftDecal = Instance.new("Decal")
+				leftDecal.Name = "LeftLogo"
+				leftDecal.Texture = teamInfo["LogoID"]
+				leftDecal.Face = Enum.NormalId.Left
+				leftDecal.Parent = uniform.Helmet
 			end
 
 			--Setting Upper Uniform
