@@ -83,29 +83,53 @@ function SetJersey(player, teamInfo, pos, variant)
 			if teamInfo["LogoID"] then
 				wait(0.1)
 				
-				-- Get or create right side logo
-				local rightDecal = uniform.Helmet:FindFirstChild("RightLogo")
-				if not rightDecal then
-					rightDecal = Instance.new("Decal")
-					rightDecal.Name = "RightLogo"
-					rightDecal.Face = Enum.NormalId.Right
-					rightDecal.Parent = uniform.Helmet
+				-- Get or create right side logo (use SurfaceGui with ImageLabel)
+				local rightGui = uniform.Helmet:FindFirstChild("RightLogo")
+				if not rightGui then
+					rightGui = Instance.new("SurfaceGui")
+					rightGui.Name = "RightLogo"
+					rightGui.Face = Enum.NormalId.Right
+					rightGui.AlwaysOnTop = false
+					rightGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+					rightGui.PixelsPerStud = 50
+					rightGui.Parent = uniform.Helmet
+					
+					local imageLabel = Instance.new("ImageLabel")
+					imageLabel.Name = "LogoImage"
+					imageLabel.Size = UDim2.new(1, 0, 1, 0)
+					imageLabel.BackgroundTransparency = 1
+					imageLabel.ScaleType = Enum.ScaleType.Fit
+					imageLabel.Parent = rightGui
 				end
-				rightDecal.ColorMapContent = teamInfo["LogoID"]
-				rightDecal.Transparency = 0
-				rightDecal.Color3 = Color3.new(1, 1, 1)
+				
+				local rightImage = rightGui:FindFirstChild("LogoImage")
+				if rightImage then
+					rightImage.Image = teamInfo["LogoID"]
+				end
 				
 				-- Get or create left side logo
-				local leftDecal = uniform.Helmet:FindFirstChild("LeftLogo")
-				if not leftDecal then
-					leftDecal = Instance.new("Decal")
-					leftDecal.Name = "LeftLogo"
-					leftDecal.Face = Enum.NormalId.Left
-					leftDecal.Parent = uniform.Helmet
+				local leftGui = uniform.Helmet:FindFirstChild("LeftLogo")
+				if not leftGui then
+					leftGui = Instance.new("SurfaceGui")
+					leftGui.Name = "LeftLogo"
+					leftGui.Face = Enum.NormalId.Left
+					leftGui.AlwaysOnTop = false
+					leftGui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+					leftGui.PixelsPerStud = 50
+					leftGui.Parent = uniform.Helmet
+					
+					local imageLabel = Instance.new("ImageLabel")
+					imageLabel.Name = "LogoImage"
+					imageLabel.Size = UDim2.new(1, 0, 1, 0)
+					imageLabel.BackgroundTransparency = 1
+					imageLabel.ScaleType = Enum.ScaleType.Fit
+					imageLabel.Parent = leftGui
 				end
-				leftDecal.ColorMapContent = teamInfo["LogoID"]
-				leftDecal.Transparency = 0
-				leftDecal.Color3 = Color3.new(1, 1, 1)
+				
+				local leftImage = leftGui:FindFirstChild("LogoImage")
+				if leftImage then
+					leftImage.Image = teamInfo["LogoID"]
+				end
 				
 				print("[ENVIROMENT] Applied logo to helmet for " .. teamInfo.Name)
 			else
