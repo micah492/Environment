@@ -170,6 +170,11 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 						v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
 					end
 				end
+			if Stadium:FindFirstChild("Glass") then
+				for i,v in ipairs(Stadium.PressSeats:GetChildren()) do
+					v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
+				end
+			end
 				if Stadium.Barrier:FindFirstChild("SecondaryPads") then
 					for i,v in ipairs(Stadium.Barrier.SecondaryPads:GetChildren()) do
 						v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
