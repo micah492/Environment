@@ -144,6 +144,7 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 	module.Settings.HomeInfo = homeInfo
 	module.Settings.AwayVariant = awayVariant or "Normal"
 	module.Settings.HomeVariant = homeVariant or "Normal"
+	module:UpdateLOSColor()
 
 	-- Setting Stadium Colors --
 	-- Only modify stadium if it exists (custom stadiums may have different names)
@@ -383,22 +384,43 @@ end)
 -----------------------------------------------------------------------
 
 function module:UpdateLOSColor()
-    local los = Services["Workspace"]:FindFirstChild("LineDown")
-    if not los then return end
+	local los = Services.Workspace:FindFirstChild("LineDown")
+	if not los then return end
 
-    local possession = FFValues.PossessionTag.Value
-    if not possession then return end
+	if not module.Settings.HomeInfo or not module.Settings.AwayInfo then
+		return
+	end
 
-    if module.Settings.HomeInfo and possession == FFValues.Home.Value.Name then
-        los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
-    elseif module.Settings.AwayInfo then
-        los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
-    end
+	local possession = FFValues.PossessionTag.Value
+	if not possession then return end
+
+	if possession == FFValues.Home.Value.Name then
+		los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+	else
+		los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
+	end
 end
 
--- Still automatically update whenever possession changes
+-- possession change
 FFValues.PossessionTag.Changed:Connect(function()
-    module:UpdateLOSColor()
+	module:UpdateLOSColor()
+end)
+
+-- team swap / reset
+FFValues.Home.Changed:Connect(function()
+	module:UpdateLOSColor()
+end)
+
+FFValues.Away.Changed:Connect(function()
+	module:UpdateLOSColor()
+end)
+
+-- LOS respawn safety
+Services.Workspace.ChildAdded:Connect(function(child)
+	if child.Name == "LineDown" then
+		task.wait()
+		module:UpdateLOSColor()
+	end
 end)
 
 
