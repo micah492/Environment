@@ -27,6 +27,9 @@ local module = {
 	}
 }
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local EnvModule = require(ReplicatedStorage:WaitForChild("EnvModule"))
+
 -----------------------------------------------------------------------
 -- Final
 -----------------------------------------------------------------------
