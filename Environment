@@ -398,7 +398,7 @@ function module:UpdateLOSColor()
     elseif module.Settings.AwayInfo and possessionTeamName == module.Settings.AwayInfo.Name then
         color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
     else
-        color = Color3.fromRGB(255, 255, 255) -- fallback white
+        color = Color3.fromHex("0010b0") -- fallback white if no possession team
     end
 
     -- Apply the color
