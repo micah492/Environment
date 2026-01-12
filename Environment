@@ -1,5 +1,5 @@
 --[[ 
-Environment Module - Football Fusion
+This module contains all of the features focusing on enhancing the Football Fusion Enviroment.
 ]]
 
 local Services = {
@@ -19,29 +19,32 @@ local module = {
 	}
 }
 
-local FFValues = Services.Storage.Flags
+-----------------------------------------------------------------------
+-- Final
+-----------------------------------------------------------------------
+local FFValues = Services["Storage"].Flags
 
 -----------------------------------------------------------------------
 -- Functions
 -----------------------------------------------------------------------
-
 function FindNumbers(children, inner, stroke)
 	for i,v in ipairs(children) do
-		if v:IsA("TextLabel") then
+		if (v:IsA("TextLabel")) then
 			v.TextColor3 = inner
 			v.TextStrokeColor3 = stroke
-		elseif #v:GetChildren() > 0 then
+		elseif (#v:GetChildren() > 0) then
 			FindNumbers(v:GetChildren(), inner, stroke)
 		end
 	end
 end
 
+-- [NEUTRAL FIX]
 local function isNeutral(player)
 	return not player.Team or player.Team.Name == "Neutral"
 end
 
 -----------------------------------------------------------------------
--- LOS COLOR SYSTEM
+-- LOS COLOR SYSTEM (ADDED ONLY)
 -----------------------------------------------------------------------
 local function UpdateLOSColor()
 	local los = Services.Workspace:FindFirstChild("LineDown")
@@ -62,39 +65,40 @@ FFValues.PossessionTag.Changed:Connect(function()
 end)
 
 -----------------------------------------------------------------------
--- Jersey System
+-- Jersey
 -----------------------------------------------------------------------
 function SetJersey(player, teamInfo, pos, variant)
 	pcall(function()
-		if not player.Character then return end
+		if not (player.Character) then return end
 
 		task.spawn(function()
 			local uniform = player.Character:WaitForChild("Uniform")
 			wait(0.5)
-			if not uniform:FindFirstChild("Helmet") then return end
+
+			if not (uniform:FindFirstChild("Helmet")) then return end
 
 			local jerseyType = pos
-			if variant == "Alternate" and teamInfo.Colors.Jersey.Alternate then
+			if variant == "Alternate" and teamInfo["Colors"]["Jersey"]["Alternate"] then
 				jerseyType = "Alternate"
 			end
 
-			uniform.Helmet.Color = Color3.fromHex(teamInfo.Colors.Jersey[jerseyType].Helmet)
+			uniform.Helmet.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Helmet"])
 
 			if pos == "Home" then
-				uniform.ShoulderPads.Front.Team.Text = string.upper(teamInfo.Name)
+				uniform.ShoulderPads.Front.Team.Text = string.upper(teamInfo["Name"])
 			else
-				uniform.ShoulderPads.Front.Team.Text = string.upper(teamInfo.City)
+				uniform.ShoulderPads.Front.Team.Text = string.upper(teamInfo["City"])
 			end
 
 			uniform.ShoulderPads.Front.Team.TextStrokeTransparency = 1
 
-			uniform.ShoulderPads.Color = Color3.fromHex(teamInfo.Colors.Jersey[jerseyType].Jersey)
-			uniform.Shirt.Color = Color3.fromHex(teamInfo.Colors.Jersey[jerseyType].Jersey)
+			uniform.ShoulderPads.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
+			uniform.Shirt.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
 
 			FindNumbers(
 				uniform:GetChildren(),
-				Color3.fromHex(teamInfo.Colors.Jersey[jerseyType].NumberInner),
-				Color3.fromHex(teamInfo.Colors.Jersey[jerseyType].NumberStroke)
+				Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["NumberInner"]),
+				Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["NumberStroke"])
 			)
 		end)
 	end)
@@ -109,16 +113,17 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 	module.Settings.AwayVariant = awayVariant or "Normal"
 	module.Settings.HomeVariant = homeVariant or "Normal"
 
-	for _,player in ipairs(Services.Players:GetPlayers()) do
+	for _, player in ipairs(Services.Players:GetPlayers()) do
 		if isNeutral(player) then continue end
 
-		if player.Team.Name == FFValues.Home.Value.Name then
-			SetJersey(player, homeInfo, "Home", module.Settings.HomeVariant)
+		if (player.Team.Name == FFValues.Home.Value.Name) then
+			SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 		else
-			SetJersey(player, awayInfo, "Away", module.Settings.AwayVariant)
+			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 		end
 	end
 
+	-- LOS update added only
 	UpdateLOSColor()
 end
 
@@ -128,16 +133,16 @@ function module:UpdateVariants(awayVariant, homeVariant)
 end
 
 -----------------------------------------------------------------------
--- Listeners
+-- Player listeners
 -----------------------------------------------------------------------
-Services.Players.PlayerAdded:Connect(function(player)
-	player.CharacterAdded:Connect(function()
+Services["Players"].PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function(character)
 		if isNeutral(player) then return end
 
-		if player.Team.Name == FFValues.Home.Value.Name then
-			SetJersey(player, module.Settings.HomeInfo, "Home", module.Settings.HomeVariant)
+		if (player.Team.Name == FFValues.Home.Value.Name) then
+			SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 		else
-			SetJersey(player, module.Settings.AwayInfo, "Away", module.Settings.AwayVariant)
+			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 		end
 	end)
 end)
@@ -145,14 +150,14 @@ end)
 -----------------------------------------------------------------------
 -- Setup
 -----------------------------------------------------------------------
-for _,player in ipairs(Services.Players:GetPlayers()) do
-	player.CharacterAdded:Connect(function()
+for _, player in ipairs(Services["Players"]:GetPlayers()) do
+	player.CharacterAdded:Connect(function(character)
 		if isNeutral(player) then return end
 
-		if player.Team.Name == FFValues.Home.Value.Name then
-			SetJersey(player, module.Settings.HomeInfo, "Home", module.Settings.HomeVariant)
+		if (player.Team.Name == FFValues.Home.Value.Name) then
+			SetJersey(player, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 		else
-			SetJersey(player, module.Settings.AwayInfo, "Away", module.Settings.AwayVariant)
+			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 		end
 	end)
 end
