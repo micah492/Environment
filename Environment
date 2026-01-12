@@ -383,7 +383,7 @@ end)
 -----------------------------------------------------------------------
 
 local function UpdateLOSColor()
-	local los = Services.Workspace:FindFirstChild("LineDown")
+	local los = Services["Workspace"]:FindFirstChild("LineDown")
 	if not los then return end
 
 	local possession = FFValues.PossessionTag.Value
