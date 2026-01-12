@@ -51,6 +51,30 @@ local function isNeutral(player)
 	return not player.Team or player.Team.Name == "Neutral"
 end
 
+-----------------------------------------------------------------------
+-- LOS COLOR SYSTEM
+-----------------------------------------------------------------------
+local function UpdateLOSColor()
+	local los = Services.Workspace:FindFirstChild("LineDown")
+	if not los then return end
+
+	local possession = FFValues.PossessionTag.Value
+	if not possession then return end
+
+	if module.Settings.HomeInfo and possession == FFValues.Home.Value.Name then
+		los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+	elseif module.Settings.AwayInfo then
+		los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
+	end
+end
+
+FFValues.PossessionTag.Changed:Connect(function()
+	UpdateLOSColor()
+end)
+
+-----------------------------------------------------------------------
+-- Jersey
+-----------------------------------------------------------------------
 function SetJersey(player, teamInfo, pos, variant)
 	pcall(function()
 		if not (player.Character) then
@@ -234,6 +258,9 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 			SetJersey(player, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 		end
 	end
+
+	-- Update LOS line color after setting teams
+	UpdateLOSColor()
 end
 
 function module:UpdateVariants(awayVariant, homeVariant)
