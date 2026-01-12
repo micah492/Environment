@@ -382,22 +382,23 @@ end)
 -- set los
 -----------------------------------------------------------------------
 
-local function UpdateLOSColor()
-	local los = Services["Workspace"]:FindFirstChild("LineDown")
-	if not los then return end
+function module:UpdateLOSColor()
+    local los = Services["Workspace"]:FindFirstChild("LineDown")
+    if not los then return end
 
-	local possession = FFValues.PossessionTag.Value
-	if not possession then return end
+    local possession = FFValues.PossessionTag.Value
+    if not possession then return end
 
-	if module.Settings.HomeInfo and possession == FFValues.Home.Value.Name then
-		los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
-	elseif module.Settings.AwayInfo then
-		los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
-	end
+    if module.Settings.HomeInfo and possession == FFValues.Home.Value.Name then
+        los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+    elseif module.Settings.AwayInfo then
+        los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
+    end
 end
 
+-- Still automatically update whenever possession changes
 FFValues.PossessionTag.Changed:Connect(function()
-	UpdateLOSColor()
+    module:UpdateLOSColor()
 end)
 
 
