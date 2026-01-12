@@ -32,10 +32,6 @@ local module = {
 -----------------------------------------------------------------------
 local FFValues = Services["Storage"].Flags
 
-FFValues.PossessionTag.Changed:Connect(function()
-	UpdateLOSColor()
-end)
-
 -----------------------------------------------------------------------
 -- Functions
 -----------------------------------------------------------------------
@@ -55,22 +51,6 @@ local function isNeutral(player)
 	return not player.Team or player.Team.Name == "Neutral"
 end
 
-local function UpdateLOSColor()
-	local los = Services.Workspace:FindFirstChild("LineDown")
-	if not los then return end
-	if not FFValues.PossessionTag.Value then return end
-
-	if FFValues.PossessionTag.Value == FFValues.Home.Value.Name then
-		if module.Settings.HomeInfo then
-			los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
-		end
-	else
-		if module.Settings.AwayInfo then
-			los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
-		end
-	end
-end
-
 function SetJersey(player, teamInfo, pos, variant)
 	pcall(function()
 		if not (player.Character) then
@@ -87,7 +67,7 @@ function SetJersey(player, teamInfo, pos, variant)
 
 			-- Determine which jersey to use based on variant
 			local jerseyType = pos -- Default to "Home" or "Away"
-
+			
 			-- If variant is "Alternate" and the team has an Alternate jersey, use it
 			if variant == "Alternate" and teamInfo["Colors"]["Jersey"]["Alternate"] then
 				jerseyType = "Alternate"
@@ -100,7 +80,7 @@ function SetJersey(player, teamInfo, pos, variant)
 			if (uniform.Helmet:FindFirstChild("RightLogo")) then
 				uniform.Helmet.RightLogo:Destroy()
 			end
-
+			
 			if (uniform.Helmet:FindFirstChild("LeftLogo")) then
 				uniform.Helmet.LeftLogo:Destroy()
 			end
@@ -171,19 +151,19 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 		local Stadium = Services["Workspace"].Models.Stadium
 		if Stadium then
 			print("[ENVIROMENT] Setting the Stadium's colors.")
-
+			
 			if Stadium:FindFirstChild("Seats") then
 				for i,v in ipairs(Stadium.Seats:GetChildren()) do
 					v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
 				end
 			end
-
+			
 			if Stadium:FindFirstChild("PressSeats") then
 				for i,v in ipairs(Stadium.PressSeats:GetChildren()) do
 					v.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Light)
 				end
 			end
-
+			
 			if Stadium:FindFirstChild("Barrier") then
 				if Stadium.Barrier:FindFirstChild("PrimaryPads") then
 					for i,v in ipairs(Stadium.Barrier.PrimaryPads:GetChildren()) do
@@ -205,7 +185,7 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 			print("[ENVIROMENT] Custom stadium detected - skipping stadium color changes.")
 		end
 	end)
-
+	
 	if not success then
 		print("[ENVIROMENT] Custom stadium detected - skipping stadium color changes.")
 	end
@@ -219,7 +199,6 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 			Services["Workspace"].Models.Uprights2.FGparts.Base.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
 		end
 	end)
-
 
 	-- Setting Field --
 	local Field = Services["Workspace"].Models.Field
@@ -260,7 +239,7 @@ end
 function module:UpdateVariants(awayVariant, homeVariant)
 	module.Settings.AwayVariant = awayVariant or module.Settings.AwayVariant
 	module.Settings.HomeVariant = homeVariant or module.Settings.HomeVariant
-
+	
 	-- Re-apply jerseys to all players
 	for _, player in ipairs(Services.Players:GetPlayers()) do
 		if isNeutral(player) then
@@ -275,8 +254,6 @@ function module:UpdateVariants(awayVariant, homeVariant)
 		end
 	end
 end
-
-UpdateLOSColor()
 
 function module:SetTime(isDay)
 	module.Settings.IsDay = isDay
@@ -417,3 +394,4 @@ for _, player in ipairs(Services["Players"]:GetPlayers()) do
 	end)
 end
 
+return module
