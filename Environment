@@ -27,9 +27,6 @@ local module = {
 	}
 }
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local EnvModule = require(ReplicatedStorage:WaitForChild("EnvModule"))
-
 -----------------------------------------------------------------------
 -- Final
 -----------------------------------------------------------------------
@@ -167,6 +164,8 @@ function SetJersey(player, teamInfo, pos, variant)
 end
 
 function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local EnvModule = require(ReplicatedStorage:WaitForChild("EnvModule"))
 	module.Settings.AwayInfo = awayInfo
 	module.Settings.HomeInfo = homeInfo
 	module.Settings.AwayVariant = awayVariant or "Normal"
