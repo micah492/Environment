@@ -378,6 +378,10 @@ Services["Workspace"].DescendantAdded:Connect(function(model)
 	end
 end)
 
+-----------------------------------------------------------------------
+-- set los
+-----------------------------------------------------------------------
+
 local function UpdateLOSColor()
 	local los = Services.Workspace:FindFirstChild("LineDown")
 	if not los then return end
