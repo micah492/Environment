@@ -378,19 +378,24 @@ Services["Workspace"].DescendantAdded:Connect(function(model)
 	end
 end)
 
--- Update LOS part color based on possession
+-- Function to update LOS color based on possession
 function module:UpdateLOSColor()
     local ws = Services.Workspace
     local FFValues = Services.Storage.Flags
 
-    if not ws:FindFirstChild("LineDown") then
+    -- Wait until LineDown exists
+    local losPart = ws:FindFirstChild("LineDown")
+    if not losPart then
+        ws.DescendantAdded:Connect(function(obj)
+            if obj.Name == "LineDown" then
+                module:UpdateLOSColor()
+            end
+        end)
         return
     end
 
-    local losPart = ws.LineDown
-
-    -- Determine which team has possession
-    local possessionTeamName = FFValues.PossessionTag.Value -- This is the team name that has the ball
+    -- Determine possession
+    local possessionTeamName = FFValues.PossessionTag.Value
     local color
 
     if module.Settings.HomeInfo and possessionTeamName == module.Settings.HomeInfo.Name then
@@ -398,17 +403,28 @@ function module:UpdateLOSColor()
     elseif module.Settings.AwayInfo and possessionTeamName == module.Settings.AwayInfo.Name then
         color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
     else
-        color = Color3.fromHex("0010b0") -- fallback white if no possession team
+        color = Color3.fromHex("FFFFFF") -- fallback
     end
 
-    -- Apply the color
+    -- Apply color
     losPart.Color = color
 end
 
--- Whenever possession changes, update LOS color
+-- Initial update
+module:UpdateLOSColor()
+
+-- Listen for possession changes
 Services.Storage.Flags.PossessionTag.Changed:Connect(function()
     module:UpdateLOSColor()
 end)
+
+-- Optional: Update LOS if it gets recreated mid-game
+Services.Workspace.DescendantAdded:Connect(function(obj)
+    if obj.Name == "LineDown" then
+        module:UpdateLOSColor()
+    end
+end)
+
 
 -----------------------------------------------------------------------
 -- Setup
