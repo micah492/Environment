@@ -32,6 +32,10 @@ local module = {
 -----------------------------------------------------------------------
 local FFValues = Services["Storage"].Flags
 
+FFValues.PossessionTag.Changed:Connect(function()
+	UpdateLOSColor()
+end)
+
 -----------------------------------------------------------------------
 -- Functions
 -----------------------------------------------------------------------
@@ -49,6 +53,22 @@ end
 -- [NEUTRAL FIX]
 local function isNeutral(player)
 	return not player.Team or player.Team.Name == "Neutral"
+end
+
+local function UpdateLOSColor()
+	local los = Services.Workspace:FindFirstChild("LineDown")
+	if not los then return end
+	if not FFValues.PossessionTag.Value then return end
+
+	if FFValues.PossessionTag.Value == FFValues.Home.Value.Name then
+		if module.Settings.HomeInfo then
+			los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+		end
+	else
+		if module.Settings.AwayInfo then
+			los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
+		end
+	end
 end
 
 function SetJersey(player, teamInfo, pos, variant)
@@ -200,6 +220,7 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 		end
 	end)
 
+
 	-- Setting Field --
 	local Field = Services["Workspace"].Models.Field
 
@@ -254,6 +275,8 @@ function module:UpdateVariants(awayVariant, homeVariant)
 		end
 	end
 end
+
+UpdateLOSColor()
 
 function module:SetTime(isDay)
 	module.Settings.IsDay = isDay
