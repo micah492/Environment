@@ -378,51 +378,22 @@ Services["Workspace"].DescendantAdded:Connect(function(model)
 	end
 end)
 
--- Function to update LOS color based on possession
-function module:UpdateLOSColor()
-    local ws = Services.Workspace
-    local FFValues = Services.Storage.Flags
+local function UpdateLOSColor()
+	local los = Services.Workspace:FindFirstChild("LineDown")
+	if not los then return end
 
-    -- Wait until LineDown exists
-    local losPart = ws:FindFirstChild("LineDown")
-    if not losPart then
-        ws.DescendantAdded:Connect(function(obj)
-            if obj.Name == "LineDown" then
-                module:UpdateLOSColor()
-            end
-        end)
-        return
-    end
+	local possession = FFValues.PossessionTag.Value
+	if not possession then return end
 
-    -- Determine possession
-    local possessionTeamName = FFValues.PossessionTag.Value
-    local color
-
-    if module.Settings.HomeInfo and possessionTeamName == module.Settings.HomeInfo.Name then
-        color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
-    elseif module.Settings.AwayInfo and possessionTeamName == module.Settings.AwayInfo.Name then
-        color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
-    else
-        color = Color3.fromHex("FFFFFF") -- fallback
-    end
-
-    -- Apply color
-    losPart.Color = color
+	if module.Settings.HomeInfo and possession == FFValues.Home.Value.Name then
+		los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
+	elseif module.Settings.AwayInfo then
+		los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
+	end
 end
 
--- Initial update
-module:UpdateLOSColor()
-
--- Listen for possession changes
-Services.Storage.Flags.PossessionTag.Changed:Connect(function()
-    module:UpdateLOSColor()
-end)
-
--- Optional: Update LOS if it gets recreated mid-game
-Services.Workspace.DescendantAdded:Connect(function(obj)
-    if obj.Name == "LineDown" then
-        module:UpdateLOSColor()
-    end
+FFValues.PossessionTag.Changed:Connect(function()
+	UpdateLOSColor()
 end)
 
 
