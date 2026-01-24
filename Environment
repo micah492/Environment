@@ -342,16 +342,22 @@ Services["Workspace"].DescendantAdded:Connect(function(model)
 		if (model.Name == "Kicker" or model.Name == "Punter") then
 			if (model:WaitForChild("Humanoid")) then
 				if (FFValues.PossessionTag.Value == FFValues.Home.Value.Name) then
+					-- Home team has possession, so they're on offense
 					if (model.Name == "Kicker") then
+						-- Kicker is from the AWAY team (defending)
 						SetJersey({Character = model}, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 					else
-						SetJersey({Character = model}, module.Settings["HomeInfo"], "Away", module.Settings.HomeVariant)
+						-- Punter is from the HOME team (offense)
+						SetJersey({Character = model}, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 					end
 				else
+					-- Away team has possession, so they're on offense
 					if (model.Name == "Kicker") then
+						-- Kicker is from the HOME team (defending)
 						SetJersey({Character = model}, module.Settings["HomeInfo"], "Home", module.Settings.HomeVariant)
 					else
-						SetJersey({Character = model}, module.Settings["AwayInfo"], "Home", module.Settings.AwayVariant)
+						-- Punter is from the AWAY team (offense)
+						SetJersey({Character = model}, module.Settings["AwayInfo"], "Away", module.Settings.AwayVariant)
 					end
 				end
 				print("[ENVIROMENT] Set " .. model.Name .. "'s Jersey")
