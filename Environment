@@ -104,7 +104,7 @@ function SetJersey(player, teamInfo, pos, variant)
 			--Setting Pants
 			uniform.LeftPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Pants"])
 			uniform.RightPants.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Pants"])
-
+ 
 			--Setting Stripes (with safety checks for kickers/punters)
 			if uniform:FindFirstChild("LeftGlove") then
 				uniform.LeftGlove.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Stripe"])
