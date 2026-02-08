@@ -93,7 +93,6 @@ function SetJersey(player, teamInfo, pos, variant)
 			end
 			uniform.ShoulderPads.Front.Team.TextStrokeColor3 = Color3.fromHex(tostring(teamInfo.Colors.Alternate.Main):gsub("#",""))
 			uniform.ShoulderPads.Front.Team.TextStrokeTransparency = 0
-			uniform.ShoulderPads.Front.Team.TextStrokeThickness = 1
 			uniform.ShoulderPads.Front.Team.LineHeight = 0.7
 			uniform.ShoulderPads.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
 			uniform.Shirt.Color = Color3.fromHex(teamInfo["Colors"]["Jersey"][jerseyType]["Jersey"])
