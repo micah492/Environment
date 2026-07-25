@@ -24,13 +24,11 @@ local module = {
 		HomeInfo = nil,
 		AwayVariant = "Normal",
 		HomeVariant = "Normal",
-		-- NEW: when true, the Home team wears its own Away-style kit and
+		-- When true, the Home team wears its own Away-style kit and
 		-- the Away team wears its own Home-style kit. The Home/Away game
 		-- assignment (scoreboard, city labels, etc.) is untouched -- this
 		-- only flips which of that team's own two jersey designs gets
-		-- rendered on the field. This is separate from AwayVariant/
-		-- HomeVariant ("Normal"/"Alternate"), which only affects teams
-		-- that define a third Jersey.Alternate look in Utilities.
+		-- rendered on the field.
 		SwapJerseys = false
 	}
 }
@@ -75,18 +73,11 @@ function SetJersey(player, teamInfo, pos, variant)
 
 			-- Determine which jersey to use.
 			-- Start from the side (Home/Away) this player actually belongs
-			-- to, flip it if a Home/Away kit swap is active, then let a
-			-- genuine "Alternate" variant override both (only for teams
-			-- that define one).
+			-- to, then flip it if a Home/Away kit swap is active.
 			local jerseyType = pos -- Default to "Home" or "Away"
 
 			if (module.Settings.SwapJerseys) then
 				jerseyType = (pos == "Home") and "Away" or "Home"
-			end
-
-			-- If variant is "Alternate" and the team has an Alternate jersey, use it
-			if variant == "Alternate" and teamInfo["Colors"]["Jersey"]["Alternate"] then
-				jerseyType = "Alternate"
 			end
 
 			--Setting Helmet
@@ -155,7 +146,6 @@ function module:SetTeams(awayInfo, homeInfo, awayVariant, homeVariant)
 	module.Settings.HomeInfo = homeInfo
 	module.Settings.AwayVariant = awayVariant or "Normal"
 	module.Settings.HomeVariant = homeVariant or "Normal"
-	module:UpdateLOSColor()
 
 	-- Setting Stadium Colors --
 	-- Only modify stadium if it exists (custom stadiums may have different names)
@@ -267,7 +257,7 @@ function module:UpdateVariants(awayVariant, homeVariant)
 	end
 end
 
--- NEW: Flips whether each team wears its own Home-style or Away-style
+-- Flips whether each team wears its own Home-style or Away-style
 -- kit, without touching which team is actually Home/Away in the game.
 -- Returns the new state (true = swapped) so callers can print/react.
 function module:ToggleJerseySwap()
@@ -359,10 +349,10 @@ Services["UserInput"].InputBegan:Connect(function(input)
 	texture.Parent = targetLine
 
 	if (Services["Workspace"].LineDown.Position.Z > Services["Workspace"].LineTogo.Position.Z) then
-		targetLine.Position = Vector3.new(0, 2.5, -40.00)
+		targetLine.Position = Vector3.new(0, 2.5, -30.00)
 		targetLine.Orientation = Vector3.new(90,180,0)
 	else
-		targetLine.Position = Vector3.new(0, 2.5, 40.00)
+		targetLine.Position = Vector3.new(0, 2.5, 30.00)
 		targetLine.Orientation = Vector3.new(90,0,0)
 	end
 
@@ -417,51 +407,6 @@ Services["Workspace"].DescendantAdded:Connect(function(model)
 		end
 	end
 end)
-
------------------------------------------------------------------------
--- set los
------------------------------------------------------------------------
-
-function module:UpdateLOSColor()
-	local los = Services.Workspace:FindFirstChild("LineDown")
-	if not los then return end
-
-	if not module.Settings.HomeInfo or not module.Settings.AwayInfo then
-		return
-	end
-
-	local possession = FFValues.PossessionTag.Value
-	if not possession then return end
-
-	if possession == FFValues.Home.Value.Name then
-		los.Color = Color3.fromHex(module.Settings.HomeInfo.Colors.Normal.Main)
-	else
-		los.Color = Color3.fromHex(module.Settings.AwayInfo.Colors.Normal.Main)
-	end
-end
-
--- possession change
-FFValues.PossessionTag.Changed:Connect(function()
-	module:UpdateLOSColor()
-end)
-
--- team swap / reset
-FFValues.Home.Changed:Connect(function()
-	module:UpdateLOSColor()
-end)
-
-FFValues.Away.Changed:Connect(function()
-	module:UpdateLOSColor()
-end)
-
--- LOS respawn safety
-Services.Workspace.ChildAdded:Connect(function(child)
-	if child.Name == "LineDown" then
-		task.wait()
-		module:UpdateLOSColor()
-	end
-end)
-
 
 -----------------------------------------------------------------------
 -- Setup
